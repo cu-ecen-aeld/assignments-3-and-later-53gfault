@@ -12,19 +12,33 @@ jobs:
             image: ubuntu:24.04
             options: --platform linux/arm64
         steps:
-          - uses: actions/checkout@v2
-          - name: Checkout submodules
-            run : git submodule update --init --recursive
-          - name: Run unit test
-            run: ./unit-test.sh
+            - name: Install dependencies
+              run: |
+                  apt-get update
+                  DEBIAN_FRONTEND=noninteractive \
+                  apt-get install -y git nodejs build-essential gcc make cmake ruby
+            - uses: actions/checkout@v2
+            - name: Mark workspace as safe for Git
+              run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+            - name: Checkout submodules
+              run : git submodule update --init --recursive
+            - name: Run unit test
+              run: ./unit-test.sh
     full-test:
         runs-on: [self-hosted, linux, ARM64]
         container:
             image: ubuntu:24.04
             options: --platform linux/arm64
         steps:
-          - uses: actions/checkout@v2
-          - name: Checkout submodules
-            run : git submodule update --init --recursive
-          - name: Run full test
-            run: ./full-test.sh
+            - name: Install dependencies
+              run: |
+                  apt-get update
+                  DEBIAN_FRONTEND=noninteractive \
+                  apt-get install -y git nodejs build-essential gcc make cmake ruby
+            - uses: actions/checkout@v2
+            - name: Mark workspace as safe for Git
+              run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+            - name: Checkout submodules
+              run : git submodule update --init --recursive
+            - name: Run full test
+              run: ./full-test.sh
