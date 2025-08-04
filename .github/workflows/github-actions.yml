@@ -24,21 +24,31 @@ jobs:
               run : git submodule update --init --recursive
             - name: Run unit test
               run: ./unit-test.sh
-    # full-test:
-    #     runs-on: [self-hosted, linux, ARM64]
-    #     container:
-    #         image: ubuntu:24.04
-    #         options: --platform linux/arm64
-    #     steps:
-    #         - name: Install dependencies
-    #           run: |
-    #               apt-get update
-    #               DEBIAN_FRONTEND=noninteractive \
-    #               apt-get install -y git nodejs build-essential gcc make cmake ruby
-    #         - uses: actions/checkout@v2
-    #         - name: Mark workspace as safe for Git
-    #           run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-    #         - name: Checkout submodules
-    #           run : git submodule update --init --recursive
-    #         - name: Run full test
-    #           run: ./full-test.sh
+    full-test:
+        runs-on: [self-hosted, linux, ARM64]
+        container:
+            image: ubuntu:24.04
+            options: --platform linux/arm64
+        env:
+            GCC_ARM_VERSION: 14.2.rel1
+        steps:
+            - name: Install dependencies
+              run: |
+                  apt-get update
+                  DEBIAN_FRONTEND=noninteractive \
+                  apt-get install -y sudo git wget nodejs build-essential gcc make cmake ruby flex bison libncurses-dev libssl-dev libelf-dev bc u-boot-tools kmod cpio psmisc qemu-system-arm
+            - name: Install ARM cross-compiler
+              run: |
+                  mkdir -p /usr/local/arm-cross-compiler/install
+                  wget -O gcc-arm.tar.xz \
+                    https://developer.arm.com/-/media/Files/downloads/gnu/${{ env.GCC_ARM_VERSION }}/binrel/arm-gnu-toolchain-${{ env.GCC_ARM_VERSION }}-aarch64-aarch64-none-linux-gnu.tar.xz
+                  tar -xf gcc-arm.tar.xz -C /usr/local/arm-cross-compiler/install
+                  rm gcc-arm.tar.xz
+                  echo "/usr/local/arm-cross-compiler/install/arm-gnu-toolchain-${{ env.GCC_ARM_VERSION }}-aarch64-aarch64-none-linux-gnu/bin" >> $GITHUB_PATH
+            - uses: actions/checkout@v2
+            - name: Mark workspace as safe for Git
+              run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+            - name: Checkout submodules
+              run : git submodule update --init --recursive
+            - name: Run full test
+              run: ./full-test.sh

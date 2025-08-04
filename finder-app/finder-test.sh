@@ -30,7 +30,7 @@ echo "Writing ${NUMFILES} files containing string ${WRITESTR} to ${WRITEDIR}"
 rm -rf "${WRITEDIR}"
 
 # Build the writer utility
-make clean
+# make clean
 
 # Commenting out `make` step since we will do cross-compilation elsewhere
 # make
