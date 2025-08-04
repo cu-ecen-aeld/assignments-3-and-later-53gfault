@@ -31,7 +31,9 @@ rm -rf "${WRITEDIR}"
 
 # Build the writer utility
 make clean
-make
+
+# Commenting out `make` step since we will do cross-compilation elsewhere
+# make
 
 # create $WRITEDIR if not assignment1
 assignment=$(cat ../conf/assignment.txt)
